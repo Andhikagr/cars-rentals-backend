@@ -21,6 +21,8 @@ func main() {
     r := mux.NewRouter()
     r.HandleFunc("/cars", handlers.GetCarsHandler(db)).Methods("GET")
     r.HandleFunc("/cars/{id:[0-9]+}", handlers.GetCarByIDHandler(db)).Methods("GET")
+    r.HandleFunc("/api/bookings", handlers.CreateBookingHandler(db)).Methods("POST")
+
 
     log.Println("Server running at http://localhost:8080")
     err = http.ListenAndServe(":8080", r)
