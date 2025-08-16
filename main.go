@@ -1,33 +1,48 @@
 package main
 
 import (
-	"cars_rentals_backend/handlers"
-	"database/sql"
+	"cars_rentals_backend/config"
+	"cars_rentals_backend/routes"
 	"log"
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
+	"github.com/robfig/cron/v3"
 )
 
+
+
+
+
 func main() {
-    dsn := "root:AG9235r*@tcp(127.0.0.1:3306)/cars_rentals"
-    db, err := sql.Open("mysql", dsn)
+    // Load .env dulu
+    err := godotenv.Load()
     if err != nil {
-        log.Fatal(err)
+        log.Println("Warning: .env file not found, using system env instead")
     }
+
+    // Init DB
+    db := config.InitDB()
     defer db.Close()
 
-    r := mux.NewRouter()
-    r.HandleFunc("/cars", handlers.GetCarsHandler(db)).Methods("GET")
-    r.HandleFunc("/cars/{id:[0-9]+}", handlers.GetCarByIDHandler(db)).Methods("GET")
-    r.HandleFunc("/api/bookings", handlers.CreateBookingHandler(db)).Methods("POST")
-    r.HandleFunc("/api/bookings", handlers.GetBookingsHandler(db))
+    // Init Midtrans Snap
+    config.InitSnapClient()
 
+    // Setup routes
+    r := routes.SetupRoutes(db)
 
+    // Setup cron
+    c := cron.New()
+    c.AddFunc("@every 10m", func() { log.Println("CleanupBookings jalan...") })
+    c.Start()
+    defer c.Stop()
+
+    // Run server
     log.Println("Server running at http://localhost:8080")
     err = http.ListenAndServe(":8080", r)
     if err != nil {
         log.Fatal(err)
     }
 }
+
