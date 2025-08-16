@@ -188,7 +188,7 @@ func CleanupBookings(db *sql.DB) {
         UPDATE bookings
         SET status = 'expired', expired_at = NOW()
         WHERE status = 'draft'
-          AND created_at < NOW() - INTERVAL 3 MINUTE
+          AND created_at < NOW() - INTERVAL 50 MINUTE
     `)
     if err != nil {
         log.Println("Error expiring draft bookings:", err)
@@ -201,7 +201,7 @@ func CleanupBookings(db *sql.DB) {
     res, err = db.Exec(`
         DELETE FROM bookings
         WHERE status = 'expired'
-          AND expired_at < NOW() - INTERVAL 5 MINUTE
+          AND expired_at < NOW() - INTERVAL 1 HOUR
     `)
     if err != nil {
         log.Println("Error deleting expired bookings:", err)
