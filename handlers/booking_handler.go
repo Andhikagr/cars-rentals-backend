@@ -19,13 +19,14 @@ func CreateBookingHandler(db *sql.DB) http.HandlerFunc {
             return
         }
 
-        res, err := db.Exec(`INSERT INTO bookings
-            (username, email, phone, picked_date, return_date, selected_driver, stock_driver, street_address, district, regency, province, total_price, created_at, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'draft')`,
-            booking.Username, booking.Email, booking.Phone, booking.PickedDate, booking.ReturnDate,
-            booking.SelectedDriver, booking.StockDriver, booking.StreetAddress, booking.District,
-            booking.Regency, booking.Province, booking.TotalPrice, booking.CreatedAt,
-        )
+       res, err := db.Exec(`INSERT INTO bookings
+    (username, email, phone, picked_date, return_date, selected_driver, stock_driver, street_address, district, regency, province, total_price, status)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'draft')`,
+    booking.Username, booking.Email, booking.Phone, booking.PickedDate, booking.ReturnDate,
+    booking.SelectedDriver, booking.StockDriver, booking.StreetAddress, booking.District,
+    booking.Regency, booking.Province, booking.TotalPrice,
+)
+
         if err != nil {
             http.Error(w, err.Error(), http.StatusInternalServerError)
             return
@@ -185,7 +186,7 @@ func CleanupBookings(db *sql.DB) {
         UPDATE bookings
         SET status = 'expired'
         WHERE status = 'draft'
-          AND created_at < NOW() - INTERVAL 1 HOUR
+          AND created_at < NOW() - INTERVAL 30 MINUTE
     `)
     if err != nil {
         log.Println("Error expiring draft bookings:", err)
@@ -198,7 +199,7 @@ func CleanupBookings(db *sql.DB) {
     res, err = db.Exec(`
         DELETE FROM bookings
         WHERE status = 'expired'
-          AND created_at < NOW() - INTERVAL 24 HOUR
+          AND created_at < NOW() - INTERVAL 1 HOUR
     `)
     if err != nil {
         log.Println("Error deleting expired bookings:", err)
