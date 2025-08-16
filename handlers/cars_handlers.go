@@ -52,7 +52,7 @@ func GetCarsHandler(db *sql.DB) http.HandlerFunc {
 //get by id
 func GetCarByIDHandler(db *sql.DB) http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
-        // Ambil ID dari URL path, misal /cars/3
+        
         idStr := r.URL.Path[len("/cars/"):]
         id, err := strconv.Atoi(idStr)
         if err != nil {

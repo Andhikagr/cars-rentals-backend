@@ -11,12 +11,12 @@ import (
 
 var SnapClient snap.Client
 
-// Inisialisasi client Snap
+
 func InitSnapClient() {
     SnapClient.New("YOUR-SERVER-KEY", midtrans.Sandbox)
 }
 
-// Request body dari Flutter
+
 type SnapRequest struct {
     OrderID    string `json:"order_id"`
     TotalPrice int64  `json:"total_price"`

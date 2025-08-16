@@ -183,7 +183,7 @@ func PayBookingHandler(db *sql.DB) http.HandlerFunc {
 }
 //delete 
 func CleanupBookings(db *sql.DB) {
-    // 1. Expire draft bookings > 15 menit
+   
     res, err := db.Exec(`
         UPDATE bookings
         SET status = 'expired', expired_at = NOW()
@@ -197,7 +197,7 @@ func CleanupBookings(db *sql.DB) {
         log.Printf("%d draft bookings expired\n", rows)
     }
 
-    // 2. Hapus expired bookings > 5 menit dari expired_at
+    
     res, err = db.Exec(`
         DELETE FROM bookings
         WHERE status = 'expired'
