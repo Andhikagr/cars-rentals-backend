@@ -2,6 +2,7 @@ package main
 
 import (
 	"cars_rentals_backend/config"
+	"cars_rentals_backend/handlers"
 	"cars_rentals_backend/routes"
 	"log"
 	"net/http"
@@ -10,10 +11,6 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/robfig/cron/v3"
 )
-
-
-
-
 
 func main() {
     // Load .env dulu
@@ -32,17 +29,20 @@ func main() {
     // Setup routes
     r := routes.SetupRoutes(db)
 
-    // Setup cron
+    // Setup cron untuk cleanup bookings otomatis
     c := cron.New()
-    c.AddFunc("@every 10m", func() { log.Println("CleanupBookings jalan...") })
+    // @every 1m untuk testing, nanti bisa diubah @every 10m
+    c.AddFunc("@every 1m", func() {
+        log.Println("CleanupBookings jalan...")
+        handlers.CleanupBookings(db)
+    })
     c.Start()
     defer c.Stop()
 
-    // Run server
+    // Jalankan server
     log.Println("Server running at http://localhost:8080")
     err = http.ListenAndServe(":8080", r)
     if err != nil {
         log.Fatal(err)
     }
 }
-

@@ -18,6 +18,9 @@ func SetupRoutes(db *sql.DB) *mux.Router {
     r.HandleFunc("/api/bookings", handlers.CreateBookingHandler(db)).Methods("POST")
     r.HandleFunc("/api/bookings", handlers.GetBookingsHandler(db)).Methods("GET")
     r.HandleFunc("/api/bookings/pay/{id:[0-9]+}", handlers.PayBookingHandler(db)).Methods("POST")
+    r.HandleFunc("/api/bookings/{id}", handlers.DeleteBookingHandler(db)).Methods("DELETE")
+
+
 
     // Midtrans
     r.HandleFunc("/api/bookings/snap-token", handlers.CreateSnapTransactionHandler).Methods("POST")

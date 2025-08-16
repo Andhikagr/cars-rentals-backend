@@ -4,8 +4,10 @@ import (
 	"cars_rentals_backend/models"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -181,12 +183,12 @@ func PayBookingHandler(db *sql.DB) http.HandlerFunc {
 }
 //delete 
 func CleanupBookings(db *sql.DB) {
-    // 1. Expire draft bookings > 1 jam
+    // 1. Expire draft bookings > 15 menit
     res, err := db.Exec(`
         UPDATE bookings
-        SET status = 'expired'
+        SET status = 'expired', expired_at = NOW()
         WHERE status = 'draft'
-          AND created_at < NOW() - INTERVAL 30 MINUTE
+          AND created_at < NOW() - INTERVAL 3 MINUTE
     `)
     if err != nil {
         log.Println("Error expiring draft bookings:", err)
@@ -195,17 +197,43 @@ func CleanupBookings(db *sql.DB) {
         log.Printf("%d draft bookings expired\n", rows)
     }
 
-    // 2. Hapus expired bookings > 24 jam
+    // 2. Hapus expired bookings > 5 menit dari expired_at
     res, err = db.Exec(`
         DELETE FROM bookings
         WHERE status = 'expired'
-          AND created_at < NOW() - INTERVAL 1 HOUR
+          AND expired_at < NOW() - INTERVAL 5 MINUTE
     `)
     if err != nil {
         log.Println("Error deleting expired bookings:", err)
     } else {
         rows, _ := res.RowsAffected()
         log.Printf("%d expired bookings deleted\n", rows)
+    }
+
+	}
+
+	func DeleteBookingHandler(db *sql.DB) http.HandlerFunc {
+    return func(w http.ResponseWriter, r *http.Request) {
+        vars := mux.Vars(r)
+        idStr := vars["id"]
+
+        id, err := strconv.Atoi(idStr)
+        if err != nil {
+            http.Error(w, "Invalid id parameter", http.StatusBadRequest)
+            return
+        }
+
+        res, err := db.Exec("DELETE FROM bookings WHERE id = ?", id)
+        if err != nil {
+            http.Error(w, err.Error(), http.StatusInternalServerError)
+            return
+        }
+
+        rows, _ := res.RowsAffected()
+        fmt.Printf("Deleted rows: %d\n", rows)
+
+        w.WriteHeader(http.StatusOK)
+        json.NewEncoder(w).Encode(map[string]string{"status": "deleted"})
     }
 }
 
