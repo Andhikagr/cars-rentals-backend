@@ -8,7 +8,7 @@ import (
 	"github.com/midtrans/midtrans-go/snap"
 )
 
-var SnapClient snap.Client
+var snapClient snap.Client
 
 func InitSnapClient() {
     serverKey := os.Getenv("MIDTRANS_SERVER_KEY")
@@ -16,7 +16,7 @@ func InitSnapClient() {
         log.Fatal("MIDTRANS_SERVER_KEY not set in .env")
     }
 
-    SnapClient.New(
+    snapClient.New(
         serverKey,        
         midtrans.Sandbox, 
     )

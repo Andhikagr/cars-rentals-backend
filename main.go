@@ -6,6 +6,7 @@ import (
 	"cars_rentals_backend/routes"
 	"log"
 	"net/http"
+	"os"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
@@ -24,6 +25,8 @@ func main() {
     defer db.Close()
 
     // Init Midtrans Snap
+    log.Println("MIDTRANS_SERVER_KEY:", os.Getenv("MIDTRANS_SERVER_KEY"))
+
     config.InitSnapClient()
 
     // Setup routes
