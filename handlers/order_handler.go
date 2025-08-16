@@ -21,7 +21,7 @@ func init() {
 	if serverKey == "" {
 		log.Fatal("MIDTRANS_SERVER_KEY not set in environment")
 	}
-	snapClient.New(serverKey, midtrans.Sandbox) // ganti midtrans.Production jika live
+	snapClient.New(serverKey, midtrans.Sandbox) 
 }
 
 // Request dari Flutter
