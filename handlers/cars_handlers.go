@@ -8,34 +8,11 @@ import (
 	"strconv"
 )
 
-// func GetCarsHandler(db *sql.DB) http.HandlerFunc {
-//     return func(w http.ResponseWriter, r *http.Request) {
-//         rows, err := db.Query("SELECT car_id, brand, model, year, image, description, transmission, fuel_type, seats, price_per_day FROM cars")
-//         if err != nil {
-//             http.Error(w, err.Error(), http.StatusInternalServerError)
-//             return
-//         }
-//         defer rows.Close()
-
-//         var cars []models.Car
-//         for rows.Next() {
-//             var car models.Car
-//             if err := rows.Scan(&car.CarID, &car.Brand, &car.Model, &car.Year, &car.Image, &car.Description, &car.Transmission, &car.FuelType, &car.Seats, &car.PricePerDay); err != nil {
-//                 http.Error(w, err.Error(), http.StatusInternalServerError)
-//                 return
-//             }
-//             cars = append(cars, car)
-//         }
-
-//         w.Header().Set("Content-Type", "application/json")
-//         json.NewEncoder(w).Encode(cars)
-//     }
-// }
 
 
 func GetCarsHandler(db *sql.DB) http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
-        search := r.URL.Query().Get("search") // ambil keyword search dari query param
+        search := r.URL.Query().Get("search") 
 
         var rows *sql.Rows
         var err error
