@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-    // Load .env dulu
+    // Load .env
     err := godotenv.Load()
     if err != nil {
         log.Println("Warning: .env file not found, using system env instead")
@@ -29,9 +29,9 @@ func main() {
     // Setup routes
     r := routes.SetupRoutes(db)
 
-    // Setup cron untuk cleanup bookings otomatis
+    // Setup cron 
     c := cron.New()
-    // @every 1m untuk testing, nanti bisa diubah @every 10m
+   
     c.AddFunc("@every 1m", func() {
         log.Println("CleanupBookings jalan...")
         handlers.CleanupBookings(db)
@@ -39,7 +39,7 @@ func main() {
     c.Start()
     defer c.Stop()
 
-    // Jalankan server
+   
     log.Println("Server running at http://localhost:8080")
     err = http.ListenAndServe(":8080", r)
     if err != nil {
