@@ -1,0 +1,9 @@
+# Biar file .env tidak ikut ke git
+.env
+
+# Biar folder vendor tidak ikut
+/vendor
+
+# Biar file log tidak ikut
+*.log
+
