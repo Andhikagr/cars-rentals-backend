@@ -6,7 +6,6 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/midtrans/midtrans-go"
@@ -16,13 +15,7 @@ import (
 // Snap client global
 var snapClient snap.Client
 
-func init() {
-	serverKey := os.Getenv("MIDTRANS_SERVER_KEY")
-	if serverKey == "" {
-		log.Fatal("MIDTRANS_SERVER_KEY not set in environment")
-	}
-	snapClient.New(serverKey, midtrans.Sandbox) 
-}
+
 
 // Request dari Flutter
 type SnapRequest struct {

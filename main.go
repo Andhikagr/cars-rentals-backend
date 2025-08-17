@@ -16,17 +16,19 @@ import (
 func main() {
     // Load .env
     err := godotenv.Load()
-    if err != nil {
-        log.Println("Warning: .env file not found, using system env instead")
-    }
+if err != nil {
+    log.Println("Warning: .env file not found, using system env instead")
+} else {
+    log.Println(".env loaded successfully")
+}
+
+log.Println("MIDTRANS_SERVER_KEY =", os.Getenv("MIDTRANS_SERVER_KEY"))
 
     // Init DB
     db := config.InitDB()
     defer db.Close()
 
     // Init Midtrans Snap
-    log.Println("MIDTRANS_SERVER_KEY:", os.Getenv("MIDTRANS_SERVER_KEY"))
-
     config.InitSnapClient()
 
     // Setup routes
