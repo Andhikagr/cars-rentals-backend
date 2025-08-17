@@ -106,9 +106,9 @@ func GetBookingsHandler(db *sql.DB) http.HandlerFunc {
 					sDriver = selectedDriver.String
 				}
 
-				tPrice := 0
+				tPrice := 0.0
 				if totalPrice.Valid {
-					tPrice = int(totalPrice.Float64)
+					tPrice = totalPrice.Float64
 				}
 
 				var cAt *time.Time
@@ -237,3 +237,65 @@ func CleanupBookings(db *sql.DB) {
     }
 }
 
+// getbookingbyid
+func GetBookingByID(db *sql.DB, bookingID int) (*models.Booking, error) {
+    log.Println("Query booking ID:", bookingID)
+    row := db.QueryRow(`
+        SELECT id, username, email, phone, picked_date, return_date,
+               selected_driver, stock_driver, street_address, district,
+               regency, province, total_price, created_at, status
+        FROM bookings
+        WHERE id = ?
+    `, bookingID)
+
+    var b models.Booking
+    var selectedDriver sql.NullString
+    var createdAt sql.NullString
+    var totalPrice sql.NullFloat64
+
+    err := row.Scan(
+        &b.ID, &b.Username, &b.Email, &b.Phone, &b.PickedDate, &b.ReturnDate,
+        &selectedDriver, &b.StockDriver, &b.StreetAddress, &b.District,
+        &b.Regency, &b.Province, &totalPrice, &createdAt, &b.Status,
+    )
+    if err != nil {
+        return nil, err
+    }
+
+    if selectedDriver.Valid {
+        b.SelectedDriver = selectedDriver.String
+    } 
+
+        
+    if totalPrice.Valid {
+    b.TotalPrice = totalPrice.Float64
+}
+
+    if createdAt.Valid && createdAt.String != "" {
+        t, _ := time.Parse("2006-01-02 15:04:05", createdAt.String)
+        b.CreatedAt = &t
+    }
+
+    // Ambil SelectedCars
+    rows, err := db.Query(`
+        SELECT c.car_id, c.brand, c.model, c.image, c.price_per_day
+        FROM booking_details bd
+        JOIN cars c ON bd.car_id = c.car_id
+        WHERE bd.booking_id = ?
+    `, bookingID)
+    if err != nil {
+        return nil, err
+    }
+    defer rows.Close()
+
+    for rows.Next() {
+        var car models.Car
+        err := rows.Scan(&car.CarID, &car.Brand, &car.Model, &car.Image, &car.PricePerDay )
+        if err != nil {
+            return nil, err
+        }
+        b.SelectedCars = append(b.SelectedCars, car)
+    }
+
+    return &b, nil
+}

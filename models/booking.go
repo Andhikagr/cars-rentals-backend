@@ -15,7 +15,7 @@ type Booking struct {
     District       string     `json:"district"`
     Regency        string     `json:"regency"`
     Province       string     `json:"province"`
-    TotalPrice     int        `json:"totalPrice"`
+    TotalPrice     float64        `json:"totalPrice"`
     SelectedCars   []Car      `json:"selectedCars"`
     CreatedAt      *time.Time `json:"created_at"` 
     Status         string     `json:"status"`

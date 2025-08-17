@@ -9,6 +9,8 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+var DB *sql.DB
+
 func InitDB() *sql.DB {
     dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
         os.Getenv("DB_USER"),

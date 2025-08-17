@@ -6,7 +6,6 @@ import (
 	"cars_rentals_backend/routes"
 	"log"
 	"net/http"
-	"os"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
@@ -16,19 +15,17 @@ import (
 func main() {
     // Load .env
     err := godotenv.Load()
-if err != nil {
-    log.Println("Warning: .env file not found, using system env instead")
-} else {
-    log.Println(".env loaded successfully")
-}
-
-log.Println("MIDTRANS_SERVER_KEY =", os.Getenv("MIDTRANS_SERVER_KEY"))
+    if err != nil {
+        log.Println("Warning: .env file not found, using system env instead")
+    }
 
     // Init DB
     db := config.InitDB()
-    defer db.Close()
+config.DB = db  // ✅ set DB global
+defer db.Close()
 
-    // Init Midtrans Snap
+    
+
     config.InitSnapClient()
 
     // Setup routes

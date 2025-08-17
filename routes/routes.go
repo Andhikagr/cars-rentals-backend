@@ -25,6 +25,11 @@ func SetupRoutes(db *sql.DB) *mux.Router {
     // Midtrans
     r.HandleFunc("/api/bookings/snap-token", handlers.CreateSnapTransactionHandler).Methods("POST")
 
+    //invoice
+    r.HandleFunc("/invoices/{id}", handlers.CreateInvoiceHandler(db)).Methods("POST")
+    r.HandleFunc("/invoices", handlers.GetInvoicesHandler).Methods("GET")
+
+
     return r
 }
 
