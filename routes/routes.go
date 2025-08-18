@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"cars_rentals_backend/config"
 	"cars_rentals_backend/handlers"
 	"database/sql"
 
@@ -24,6 +25,7 @@ func SetupRoutes(db *sql.DB) *mux.Router {
 
     // Midtrans
     r.HandleFunc("/api/bookings/snap-token", handlers.CreateSnapTransactionHandler).Methods("POST")
+    r.HandleFunc("/midtrans/notification", handlers.MidtransNotificationHandler(config.DB)).Methods("POST")
 
     //invoice
     r.HandleFunc("/invoices/{id}", handlers.CreateInvoiceHandler(db)).Methods("POST")

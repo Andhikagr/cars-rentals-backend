@@ -121,7 +121,7 @@ func CreateSnapTransactionHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Simpan Snap token ke DB
 	_, err = config.DB.Exec(
-		"UPDATE bookings SET snap_token=? WHERE id=?",
+		"UPDATE bookings SET snap_token=?, status='pending' WHERE id=?",
 		snapResp.Token, booking.ID,
 	)
 	if err != nil {
