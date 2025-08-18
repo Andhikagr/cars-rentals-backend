@@ -19,4 +19,6 @@ type Booking struct {
     SelectedCars   []Car      `json:"selectedCars"`
     CreatedAt      *time.Time `json:"created_at"` 
     Status         string     `json:"status"`
+    SnapToken      string     `json:"snapToken"`
+
 }

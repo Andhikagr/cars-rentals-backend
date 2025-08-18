@@ -32,4 +32,3 @@ func SetupRoutes(db *sql.DB) *mux.Router {
 
     return r
 }
-

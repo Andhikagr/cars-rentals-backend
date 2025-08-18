@@ -9,15 +9,22 @@ import (
 	"github.com/midtrans/midtrans-go/snap"
 )
 
-var SnapClient snap.Client
+var SnapClient *snap.Client
 
 func InitSnapClient() {
-    // Load .env hanya sekali di sini, biar aman
-    godotenv.Load()
+	// Load .env
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Failed to load .env")
+	}
 
-    serverKey := os.Getenv("MIDTRANS_SERVER_KEY")
-   
+	serverKey := os.Getenv("MIDTRANS_SERVER_KEY")
+	if serverKey == "" {
+		log.Fatal("MIDTRANS_SERVER_KEY kosong! Cek .env")
+	}
 
-    log.Println("MIDTRANS_SERVER_KEY="+serverKey)
-    SnapClient.New(serverKey, midtrans.Sandbox)
+	// SnapClient sekarang pointer dan sudah terinisialisasi benar
+	SnapClient = &snap.Client{}
+	SnapClient.New(serverKey, midtrans.Sandbox)
+	log.Println("MIDTRANS_SERVER_KEY =", serverKey)
 }
