@@ -60,7 +60,7 @@ func GetBookingsHandler(db *sql.DB) http.HandlerFunc {
 			SELECT b.id AS booking_id,
 				   b.username, b.email, b.phone, b.picked_date, b.return_date,
 				   b.selected_driver, b.stock_driver, b.street_address, b.district,
-				   b.regency, b.province, b.total_price, b.created_at, b.status,
+				   b.regency, b.province, b.total_price, b.created_at, b.status, b.payment_type, b.transaction_Id,
 				   c.car_id, c.brand, c.model, c.image
 			FROM bookings b
 			LEFT JOIN booking_details bd ON b.id = bd.booking_id
@@ -84,6 +84,8 @@ func GetBookingsHandler(db *sql.DB) http.HandlerFunc {
 			var totalPrice sql.NullFloat64
 			var createdAtStr sql.NullString
 			var status string
+			var paymentType sql.NullString
+			var transactionId sql.NullString
 			var carID sql.NullInt64
 			var brand, model, image sql.NullString
 
@@ -91,7 +93,7 @@ func GetBookingsHandler(db *sql.DB) http.HandlerFunc {
 				&bookingID, &bUsername, &bEmail, &bPhone,
 				&pickedDateStr, &returnDateStr,
 				&selectedDriver, &stockDriver, &bStreet, &bDistrict,
-				&bRegency, &bProvince, &totalPrice, &createdAtStr, &status,
+				&bRegency, &bProvince, &totalPrice, &createdAtStr, &status, &paymentType, &transactionId,
 				&carID, &brand, &model, &image,
 			)
 			if err != nil {
@@ -119,6 +121,16 @@ func GetBookingsHandler(db *sql.DB) http.HandlerFunc {
 					}
 				}
 
+                pType := ""
+if paymentType.Valid {
+    pType = paymentType.String
+}
+
+tId := ""
+if transactionId.Valid {
+    tId = transactionId.String
+}
+
 				booking = &models.Booking{
 					ID:             bookingID,
 					Username:       bUsername,
@@ -135,6 +147,8 @@ func GetBookingsHandler(db *sql.DB) http.HandlerFunc {
 					TotalPrice:     tPrice,
 					CreatedAt:      cAt,
 					Status:         status,
+					PaymentType:    pType,
+					TransactionId:  tId,
 					SelectedCars:   []models.Car{},
 				}
 
@@ -162,26 +176,6 @@ func GetBookingsHandler(db *sql.DB) http.HandlerFunc {
 	}
 }
 
-
-//pay
-func PayBookingHandler(db *sql.DB) http.HandlerFunc {
-    return func(w http.ResponseWriter, r *http.Request) {
-        vars := mux.Vars(r)
-        bookingID := vars["id"]
-
-        _, err := db.Exec(`UPDATE bookings SET status='paid' WHERE id=?`, bookingID)
-        if err != nil {
-            http.Error(w, err.Error(), http.StatusInternalServerError)
-            return
-        }
-
-        w.Header().Set("Content-Type", "application/json")
-        json.NewEncoder(w).Encode(map[string]string{
-            "status": "paid",
-        })
-    }
-}
-//delete 
 func CleanupBookings(db *sql.DB) {
    
     res, err := db.Exec(`

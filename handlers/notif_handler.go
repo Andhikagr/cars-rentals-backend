@@ -19,6 +19,8 @@ func MidtransNotificationHandler(db *sql.DB) http.HandlerFunc {
 			TransactionStatus string `json:"transaction_status"`
 			OrderID           string `json:"order_id"`
 			GrossAmount       string `json:"gross_amount"`
+			PaymentType			string `json:"payment_type"`  
+			TransactionID		string `json:"transaction_id"`  
 		}
 		if err := json.NewDecoder(r.Body).Decode(&notif); err != nil {
 			log.Println("Failed to decode Midtrans notification:", err)
@@ -70,9 +72,17 @@ func MidtransNotificationHandler(db *sql.DB) http.HandlerFunc {
 
 		// Update status booking di database
 		if updatePaidAt {
-			_, err = db.Exec(`UPDATE bookings SET status=?, paid_at=? WHERE id=?`, newStatus, time.Now(), bookingID)
+			_, err = db.Exec(`UPDATE bookings SET status=?, paid_at=?, payment_type=?, transaction_id=? WHERE id=?`, 
+				newStatus, 
+				time.Now(),
+				notif.PaymentType,
+				notif.TransactionID, 
+				bookingID,
+			)
 		} else {
-			_, err = db.Exec(`UPDATE bookings SET status=? WHERE id=?`, newStatus, bookingID)
+			_, err = db.Exec(`UPDATE bookings SET status=? WHERE id=?`, 
+			newStatus,  
+			bookingID)
 		}
 		if err != nil {
 			log.Println("Failed to update booking status:", err)

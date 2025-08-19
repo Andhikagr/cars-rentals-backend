@@ -20,5 +20,7 @@ type Booking struct {
     CreatedAt      *time.Time `json:"created_at"` 
     Status         string     `json:"status"`
     SnapToken      string     `json:"snapToken"`
+    PaymentType      string     `json:"paymentType"`
+    TransactionId      string     `json:"transactionId"`
 
 }

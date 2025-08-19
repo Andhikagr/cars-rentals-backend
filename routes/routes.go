@@ -18,7 +18,7 @@ func SetupRoutes(db *sql.DB) *mux.Router {
     // Bookings
     r.HandleFunc("/api/bookings", handlers.CreateBookingHandler(db)).Methods("POST")
     r.HandleFunc("/api/bookings", handlers.GetBookingsHandler(db)).Methods("GET")
-    r.HandleFunc("/api/bookings/pay/{id:[0-9]+}", handlers.PayBookingHandler(db)).Methods("POST")
+    // r.HandleFunc("/api/bookings/pay/{id:[0-9]+}", handlers.PayBookingHandler(db)).Methods("POST")
     r.HandleFunc("/api/bookings/{id}", handlers.DeleteBookingHandler(db)).Methods("DELETE")
 
 
@@ -27,9 +27,7 @@ func SetupRoutes(db *sql.DB) *mux.Router {
     r.HandleFunc("/api/bookings/snap-token", handlers.CreateSnapTransactionHandler).Methods("POST")
     r.HandleFunc("/midtrans/notification", handlers.MidtransNotificationHandler(config.DB)).Methods("POST")
 
-    //invoice
-    r.HandleFunc("/invoices/{id}", handlers.CreateInvoiceHandler(db)).Methods("POST")
-    r.HandleFunc("/invoices", handlers.GetInvoicesHandler).Methods("GET")
+  
 
 
     return r
